@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投标工具授权管理端</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea {
+            font-family: 'Courier New', monospace;
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .code-display {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        
+        .record-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .record-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .record-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .record-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .type-1 { background-color: #e3f2fd; color: #1565c0; }
+        .type-3 { background-color: #e8f5e9; color: #2e7d32; }
+        .type-10 { background-color: #fff3e0; color: #f57c00; }
+        .type-999 { background-color: #f3e5f5; color: #7b1fa2; }
+        
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .record-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .record-actions .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 4px solid #3498db;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .email-template {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #f39c12;
+            font-size: 12px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .email-template h4 {
+            color: #d68910;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .record-actions {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tab-container {
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #3498db;
+        }
+        
+        .tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .data-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .data-table tr:hover {
+            background-color: #ecf0f1;
+        }
+        
+        .copy-btn {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .copy-btn:hover {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>投标工具授权管理端</h1>
+            <p class="subtitle">开发者专用 - 用于生成和管理用户授权码</p>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('generate')">生成授权码</button>
+                <button class="tab" onclick="showTab('verify')">验证授权码</button>
+                <button class="tab" onclick="showTab('records')">授权记录</button>
+                <button class="tab" onclick="showTab('users')">用户管理</button>
+                <button class="tab" onclick="showTab('stats')">数据统计</button>
+            </div>
+            
+            <!-- 生成授权码标签 -->
+            <div id="generate-tab" class="tab-content active">
+                <div class="section">
+                    <h2>生成授权码</h2>
+                    <p>使用此工具为用户生成授权码。需要用户的授权请求码和支付信息。</p>
+                    
+                    <div class="form-group">
+                        <label for="authRequestCode">用户授权请求码：</label>
+                        <input type="text" id="authRequestCode" placeholder="输入用户发送的授权请求码，格式：AUTH-REQ-时间戳-随机码">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userAmount">支付金额：</label>
+                            <select id="userAmount">
+                                <option value="8">8元 - 1次使用</option>
+                                <option value="18">18元 - 3次使用</option>
+                                <option value="58">58元 - 10次使用</option>
+                                <option value="88">88元 - 终生使用</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userEmail">用户邮箱：</label>
+                            <input type="email" id="userEmail" placeholder="用户邮箱，用于发送授权码">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userName">用户姓名/公司：</label>
+                            <input type="text" id="userName" placeholder="用户姓名或公司名称">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentProof">支付凭证截图（可选）：</label>
+                        <textarea id="paymentProof" placeholder="可以在此记录用户的支付凭证信息，如微信支付截图描述等"></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="generateLicense()">
+                            🔑 生成授权码
+                        </button>
+                        <button class="btn btn-warning" onclick="testLicenseGeneration()">
+                            🧪 测试生成
+                        </button>
+                        <button class="btn btn-success" onclick="copyLicenseCode()" id="copyBtn" disabled>
+                            📋 复制授权码
+                        </button>
+                    </div>
+                    
+                    <div id="generateStatus" class="status-message"></div>
+                    
+                    <div id="licenseResult" style="display: none;">
+                        <h3>生成的授权码：</h3>
+                        <div id="licenseCodeDisplay" class="code-display"></div>
+                        
+                        <h3>邮件回复模板：</h3>
+                        <div class="email-template">
+                            <h4>回复给用户的邮件模板</h4>
+主题：投标工具授权码 - [用户姓名/公司名]
+
+尊敬的[用户姓名/公司名]：
+
+您好！
+
+已收到您的支付凭证和授权请求，感谢您对投标价格评分估算工具的支持！
+
+您的授权码已生成：
+
+【授权码】
+<div id="emailLicenseCode" style="font-weight: bold; margin: 10px 0; padding: 10px; background: #fff; border: 1px dashed #3498db;"></div>
+
+【使用说明】
+1. 打开"投标价格评分估算工具"
+2. 点击"导入授权码"按钮
+3. 粘贴上面的授权码
+4. 点击"激活授权"按钮
+5. 激活成功后即可获得对应的使用次数
+
+【注意事项】
+1. 此授权码仅限您当前电脑使用
+2. 授权码有效期为30天
+3. 如有问题请联系：65496209@qq.com
+
+感谢您的支持！
+祝您工作顺利！
+
+开发者：2026Developer@sy
+                        </div>
+                        
+                        <div class="button-group">
+                            <button class="btn btn-success" onclick="copyEmailTemplate()">
+                                📧 复制邮件模板
+                            </button>
+                            <button class="btn btn-primary" onclick="saveLicenseRecord()">
+                                💾 保存记录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 验证授权码标签 -->
+            <div id="verify-tab" class="tab-content">
+                <div class="section">
+                    <h2>验证授权码</h2>
+                    <p>验证用户提供的授权码是否有效，以及查询授权码的详细信息。</p>
+                    
+                    <div class="form-group">
+                        <label for="verifyLicenseCode">输入授权码进行验证：</label>
+                        <input type="text" id="verifyLicenseCode" placeholder="输入授权码进行验证">
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="verifyLicense()">
+                            🔍 验证授权码
+                        </button>
+                        <button class="btn btn-warning" onclick="loadAllLicenses()">
+                            📋 加载所有记录
+                        </button>
+                    </div>
+                    
+                    <div id="verifyStatus" class="status-message"></div>
+                    
+                    <div id="verifyResult" style="display: none; margin-top: 20px;">
+                        <h3>授权码详细信息：</h3>
+                        <div class="record-item">
+                            <div class="record-header">
+                                <span class="record-code" id="verifyCode"></span>
+                                <span class="record-type" id="verifyType"></span>
+                            </div>
+                            <div class="record-details">
+                                <div><strong>使用次数：</strong><span id="verifyTimes"></span></div>
+                                <div><strong>对应金额：</strong><span id="verifyAmount"></span></div>
+                                <div><strong>生成时间：</strong><span id="verifyGenerated"></span></div>
+                                <div><strong>激活状态：</strong><span id="verifyStatusText"></span></div>
+                                <div><strong>激活时间：</strong><span id="verifyActivated"></span></div>
+                                <div><strong>机器码：</strong><span id="verifyMachineCode"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="allLicenses" style="display: none; margin-top: 20px;">
+                        <h3>所有授权记录：</h3>
+                        <div id="licensesList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 授权记录标签 -->
+            <div id="records-tab" class="tab-content">
+                <div class="section">
+                    <h2>授权记录管理</h2>
+                    <p>查看和管理所有生成的授权码记录。</p>
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchRecords" placeholder="搜索授权码、邮箱或机器码..." onkeyup="searchLicenseRecords()" style="width: 100%;">
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="loadLicenseRecords()">
+                            🔄 刷新记录
+                        </button>
+                        <button class="btn btn-warning" onclick="exportRecordsToCSV()">
+                            📊 导出为CSV
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllRecords()">
+                            🗑️ 清空所有记录
+                        </button>
+                    </div>
+                    
+                    <div id="recordsStatus" class="status-message"></div>
+                    
+                    <div id="recordsList" style="margin-top: 20px;">
+                        <!-- 授权记录将动态加载在这里 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 用户管理标签 -->
+            <div id="users-tab" class="tab-content">
+                <div class="section">
+                    <h2>用户管理</h2>
+                    <p>查看所有使用过工具的用户信息。</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">总用户数</div>
+                            <div class="stat-value" id="totalUsers">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">付费用户</div>
+                            <div class="stat-value" id="paidUsers">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">终生用户</div>
+                            <div class="stat-value" id="lifetimeUsers">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">总收入</div>
+                            <div class="stat-value" id="totalRevenue">0元</div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="loadUserData()">
+                            🔄 加载用户数据
+                        </button>
+                        <button class="btn btn-warning" onclick="exportUsersToCSV()">
+                            👥 导出用户数据
+                        </button>
+                    </div>
+                    
+                    <div id="usersStatus" class="status-message"></div>
+                    
+                    <div id="usersTableContainer" style="margin-top: 20px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>机器码</th>
+                                    <th>剩余次数</th>
+                                    <th>是否终生</th>
+                                    <th>最后支付</th>
+                                    <th>总支付</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- 用户数据将动态加载在这里 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 数据统计标签 -->
+            <div id="stats-tab" class="tab-content">
+                <div class="section">
+                    <h2>数据统计</h2>
+                    <p>查看工具使用情况和收入统计。</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card" style="border-top-color: #3498db;">
+                            <div class="stat-label">总授权码数</div>
+                            <div class="stat-value" id="totalLicenses">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top-color: #2ecc71;">
+                            <div class="stat-label">已激活数</div>
+                            <div class="stat-value" id="activatedLicenses">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top-color: #f39c12;">
+                            <div class="stat-label">8元授权</div>
+                            <div class="stat-value" id="type1Licenses">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top-color: #9b59b6;">
+                            <div class="stat-label">18元授权</div>
+                            <div class="stat-value" id="type3Licenses">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top-color: #e74c3c;">
+                            <div class="stat-label">58元授权</div>
+                            <div class="stat-value" id="type10Licenses">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top-color: #1abc9c;">
+                            <div class="stat-label">88元授权</div>
+                            <div class="stat-value" id="type999Licenses">0</div>
+                        </div>
+                    </div>
+                    
+                    <h3>近期授权记录</h3>
+                    <div id="recentRecords" style="margin-top: 20px;">
+                        <!-- 近期记录将动态加载在这里 -->
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="updateStatistics()">
+                            📈 更新统计数据
+                        </button>
+                        <button class="btn btn-warning" onclick="generateReport()">
+                            📄 生成统计报告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>投标工具授权管理端 v1.0 | 开发者专用工具</p>
+            <p>说明：此工具用于生成和管理用户授权码，请妥善保管</p>
+            <p>开发者：2026Developer@sy | 邮箱：65496209@qq.com</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentLicenseCode = null;
+        let licenseRecords = [];
+        let userData = [];
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载本地存储的数据
+            loadLocalData();
+            
+            // 显示默认标签
+            showTab('generate');
+            
+            // 更新统计数据
+            updateStatistics();
+        });
+        
+        // 显示标签页
+        function showTab(tabName) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有标签的active类
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // 激活选中的标签
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.textContent.includes(getTabName(tabName))) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // 如果是记录标签，加载记录
+            if (tabName === 'records') {
+                loadLicenseRecords();
+            } else if (tabName === 'users') {
+                loadUserData();
+            } else if (tabName === 'stats') {
+                updateStatistics();
+            }
+        }
+        
+        // 获取标签显示名称
+        function getTabName(tabKey) {
+            const tabNames = {
+                'generate': '生成授权码',
+                'verify': '验证授权码',
+                'records': '授权记录',
+                'users': '用户管理',
+                'stats': '数据统计'
+            };
+            return tabNames[tabKey] || tabKey;
+        }
+        
+        // 加载本地数据
+        function loadLocalData() {
+            // 加载授权记录
+            const savedRecords = localStorage.getItem('licenseRecords');
+            if (savedRecords) {
+                try {
+                    licenseRecords = JSON.parse(savedRecords);
+                } catch (e) {
+                    console.error('加载授权记录失败:', e);
+                    licenseRecords = [];
+                }
+            }
+            
+            // 加载用户数据（来自工具端）
+            const savedUsers = localStorage.getItem('bidToolUsers');
+            if (savedUsers) {
+                try {
+                    userData = JSON.parse(savedUsers);
+                } catch (e) {
+                    console.error('加载用户数据失败:', e);
+                    userData = [];
+                }
+            }
+        }
+        
+        // 生成授权码
+        function generateLicense() {
+            const authRequestCode = document.getElementById('authRequestCode').value.trim();
+            const userAmount = parseInt(document.getElementById('userAmount').value);
+            const userEmail = document.getElementById('userEmail').value.trim();
+            const userName = document.getElementById('userName').value.trim();
+            
+            // 验证输入
+            if (!authRequestCode) {
+                showStatus('generateStatus', 'error', '请输入授权请求码');
+                return;
+            }
+            
+            if (!authRequestCode.startsWith('AUTH-REQ-')) {
+                showStatus('generateStatus', 'error', '授权请求码格式不正确');
+                return;
+            }
+            
+            if (!userEmail && !userName) {
+                showStatus('generateStatus', 'error', '请输入用户邮箱或姓名');
+                return;
+            }
+            
+            // 解析授权请求码
+            const parts = authRequestCode.split('-');
+            if (parts.length !== 4) {
+                showStatus('generateStatus', 'error', '授权请求码格式不正确，应为：AUTH-REQ-时间戳-随机码');
+                return;
+            }
+            
+            const timestamp = parts[2];
+            const randomStr = parts[3];
+            
+            // 验证时间戳
+            if (!/^\d+$/.test(timestamp)) {
+                showStatus('generateStatus', 'error', '授权请求码中的时间戳格式不正确');
+                return;
+            }
+            
+            // 根据金额确定类型代码和使用次数
+            let typeCode, times;
+            switch(userAmount) {
+                case 8:
+                    typeCode = '001';
+                    times = 1;
+                    break;
+                case 18:
+                    typeCode = '003';
+                    times = 3;
+                    break;
+                case 58:
+                    typeCode = '010';
+                    times = 10;
+                    break;
+                case 88:
+                    typeCode = '999';
+                    times = 9999; // 终生使用
+                    break;
+                default:
+                    typeCode = '001';
+                    times = 1;
+            }
+            
+            // 生成签名
+            const signature = generateSignature(typeCode, timestamp, randomStr);
+            
+            // 生成授权码
+            currentLicenseCode = `AUTH-${typeCode}-${timestamp}-${randomStr}-${signature}`;
+            
+            // 显示结果
+            document.getElementById('licenseCodeDisplay').textContent = currentLicenseCode;
+            document.getElementById('emailLicenseCode').textContent = currentLicenseCode;
+            document.getElementById('licenseResult').style.display = 'block';
+            
+            // 启用复制按钮
+            document.getElementById('copyBtn').disabled = false;
+            
+            // 显示成功状态
+            showStatus('generateStatus', 'success', `授权码生成成功！类型：${userAmount}元，使用次数：${times}`);
+            
+            // 自动滚动到结果
+            document.getElementById('licenseResult').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 生成签名（与工具端相同的算法）
+        function generateSignature(typeCode, timestamp, randomStr) {
+            // 简化的签名算法
+            const secret = '2026Developer@sy'; // 开发者密钥
+            const str = `${typeCode}-${timestamp}-${randomStr}-${secret}`;
+            
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            return Math.abs(hash).toString(16).substring(0, 4).toUpperCase();
+        }
+        
+        // 测试生成授权码
+        function testLicenseGeneration() {
+            // 生成测试用的授权请求码
+            const timestamp = Date.now();
+            const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase();
+            const testRequestCode = `AUTH-REQ-${timestamp}-${randomStr}`;
+            
+            // 填入表单
+            document.getElementById('authRequestCode').value = testRequestCode;
+            document.getElementById('userAmount').value = '18';
+            document.getElementById('userEmail').value = 'test@example.com';
+            document.getElementById('userName').value = '测试用户';
+            document.getElementById('paymentProof').value = '测试支付凭证';
+            
+            showStatus('generateStatus', 'info', '已填入测试数据，请点击"生成授权码"按钮');
+        }
+        
+        // 复制授权码
+        function copyLicenseCode() {
+            if (!currentLicenseCode) {
+                showStatus('generateStatus', 'error', '请先生成授权码');
+                return;
+            }
+            
+            copyToClipboard(currentLicenseCode);
+            showStatus('generateStatus', 'success', '授权码已复制到剪贴板！');
+        }
+        
+        // 复制邮件模板
+        function copyEmailTemplate() {
+            const emailTemplate = document.querySelector('.email-template').textContent;
+            copyToClipboard(emailTemplate);
+            showStatus('generateStatus', 'success', '邮件模板已复制到剪贴板！');
+        }
+        
+        // 保存授权记录
+        function saveLicenseRecord() {
+            if (!currentLicenseCode) {
+                showStatus('generateStatus', 'error', '请先生成授权码');
+                return;
+            }
+            
+            const authRequestCode = document.getElementById('authRequestCode').value.trim();
+            const userAmount = parseInt(document.getElementById('userAmount').value);
+            const userEmail = document.getElementById('userEmail').value.trim();
+            const userName = document.getElementById('userName').value.trim();
+            const paymentProof = document.getElementById('paymentProof').value.trim();
+            
+            // 解析授权码获取信息
+            const parts = currentLicenseCode.split('-');
+            const typeCode = parts[1];
+            const timestamp = parts[2];
+            
+            // 确定使用次数
+            let times;
+            switch(typeCode) {
+                case '001': times = 1; break;
+                case '003': times = 3; break;
+                case '010': times = 10; break;
+                case '999': times = 9999; break;
+                default: times = 1;
+            }
+            
+            // 创建记录对象
+            const record = {
+                id: Date.now(),
+                requestCode: authRequestCode,
+                licenseCode: currentLicenseCode,
+                typeCode: typeCode,
+                amount: userAmount,
+                times: times,
+                userEmail: userEmail,
+                userName: userName,
+                paymentProof: paymentProof,
+                generatedAt: new Date().toISOString(),
+                activated: false,
+                activatedAt: null,
+                machineCode: null,
+                notes: ''
+            };
+            
+            // 添加到记录数组
+            licenseRecords.push(record);
+            
+            // 保存到localStorage
+            localStorage.setItem('licenseRecords', JSON.stringify(licenseRecords));
+            
+            // 显示成功消息
+            showStatus('generateStatus', 'success', '授权记录已保存！');
+            
+            // 更新统计数据
+            updateStatistics();
+        }
+        
+        // 验证授权码
+        function verifyLicense() {
+            const licenseCode = document.getElementById('verifyLicenseCode').value.trim();
+            
+            if (!licenseCode) {
+                showStatus('verifyStatus', 'error', '请输入授权码');
+                return;
+            }
+            
+            if (!licenseCode.startsWith('AUTH-')) {
+                showStatus('verifyStatus', 'error', '授权码格式不正确');
+                return;
+            }
+            
+            // 解析授权码
+            const parts = licenseCode.split('-');
+            if (parts.length !== 5) {
+                showStatus('verifyStatus', 'error', '授权码格式不正确，应为：AUTH-类型-时间戳-随机码-签名');
+                return;
+            }
+            
+            const typeCode = parts[1];
+            const timestamp = parts[2];
+            const randomStr = parts[3];
+            const signature = parts[4];
+            
+            // 验证签名
+            const expectedSignature = generateSignature(typeCode, timestamp, randomStr);
+            if (signature !== expectedSignature) {
+                showStatus('verifyStatus', 'error', '授权码签名验证失败，可能被篡改');
+                return;
+            }
+            
+            // 检查时间戳是否在有效期内（30天内）
+            const licenseTime = parseInt(timestamp);
+            const now = Date.now();
+            const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+            
+            if (now - licenseTime > thirtyDays) {
+                showStatus('verifyStatus', 'error', '授权码已过期（超过30天）');
+                return;
+            }
+            
+            // 查找记录
+            const record = licenseRecords.find(r => r.licenseCode === licenseCode);
+            
+            // 显示验证结果
+            document.getElementById('verifyResult').style.display = 'block';
+            document.getElementById('verifyCode').textContent = licenseCode;
+            
+            // 设置类型显示
+            let typeText = '', typeClass = '', times = 1, amount = 8;
+            switch(typeCode) {
+                case '001':
+                    typeText = '8元/1次';
+                    typeClass = 'type-1';
+                    times = 1;
+                    amount = 8;
+                    break;
+                case '003':
+                    typeText = '18元/3次';
+                    typeClass = 'type-3';
+                    times = 3;
+                    amount = 18;
+                    break;
+                case '010':
+                    typeText = '58元/10次';
+                    typeClass = 'type-10';
+                    times = 10;
+                    amount = 58;
+                    break;
+                case '999':
+                    typeText = '88元/终生';
+                    typeClass = 'type-999';
+                    times = 9999;
+                    amount = 88;
+                    break;
+            }
+            
+            document.getElementById('verifyType').textContent = typeText;
+            document.getElementById('verifyType').className = `record-type ${typeClass}`;
+            
+            document.getElementById('verifyTimes').textContent = times + '次';
+            document.getElementById('verifyAmount').textContent = amount + '元';
+            
+            const generatedTime = new Date(licenseTime).toLocaleString('zh-CN');
+            document.getElementById('verifyGenerated').textContent = generatedTime;
+            
+            if (record) {
+                document.getElementById('verifyStatusText').textContent = record.activated ? '已激活' : '未激活';
+                document.getElementById('verifyStatusText').style.color = record.activated ? '#27ae60' : '#e74c3c';
+                
+                document.getElementById('verifyActivated').textContent = record.activatedAt ? 
+                    new Date(record.activatedAt).toLocaleString('zh-CN') : '未激活';
+                document.getElementById('verifyMachineCode').textContent = record.machineCode || '未知';
+            } else {
+                document.getElementById('verifyStatusText').textContent = '未找到记录';
+                document.getElementById('verifyActivated').textContent = '未找到记录';
+                document.getElementById('verifyMachineCode').textContent = '未找到记录';
+            }
+            
+            showStatus('verifyStatus', 'success', '授权码验证通过！');
+        }
+        
+        // 加载所有授权码
+        function loadAllLicenses() {
+            if (licenseRecords.length === 0) {
+                showStatus('verifyStatus', 'info', '暂无授权记录');
+                return;
+            }
+            
+            let html = '';
+            licenseRecords.forEach(record => {
+                let typeText = '', typeClass = '';
+                switch(record.typeCode) {
+                    case '001': typeText = '8元/1次'; typeClass = 'type-1'; break;
+                    case '003': typeText = '18元/3次'; typeClass = 'type-3'; break;
+                    case '010': typeText = '58元/10次'; typeClass = 'type-10'; break;
+                    case '999': typeText = '88元/终生'; typeClass = 'type-999'; break;
+                }
+                
+                html += `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <span class="record-code">${record.licenseCode}</span>
+                            <span class="record-type ${typeClass}">${typeText}</span>
+                        </div>
+                        <div class="record-details">
+                            <div><strong>用户：</strong>${record.userName || '未记录'}</div>
+                            <div><strong>邮箱：</strong>${record.userEmail || '未记录'}</div>
+                            <div><strong>生成时间：</strong>${new Date(record.generatedAt).toLocaleString('zh-CN')}</div>
+                            <div><strong>状态：</strong>${record.activated ? '已激活' : '未激活'}</div>
+                        </div>
+                        <div class="record-actions">
+                            <button class="btn copy-btn" onclick="copyToClipboard('${record.licenseCode}')">复制</button>
+                            <button class="btn btn-primary" onclick="viewRecordDetails(${record.id})">详情</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('licensesList').innerHTML = html;
+            document.getElementById('allLicenses').style.display = 'block';
+            
+            showStatus('verifyStatus', 'info', `已加载 ${licenseRecords.length} 条授权记录`);
+        }
+        
+        // 查看记录详情
+        function viewRecordDetails(recordId) {
+            const record = licenseRecords.find(r => r.id === recordId);
+            if (!record) return;
+            
+            // 填充到验证表单
+            document.getElementById('verifyLicenseCode').value = record.licenseCode;
+            
+            // 切换到验证标签
+            showTab('verify');
+            
+            // 执行验证
+            setTimeout(() => {
+                verifyLicense();
+            }, 100);
+        }
+        
+        // 加载授权记录
+        function loadLicenseRecords() {
+            if (licenseRecords.length === 0) {
+                document.getElementById('recordsList').innerHTML = '<p style="text-align: center; color: #7f8c8d;">暂无授权记录</p>';
+                return;
+            }
+            
+            // 按生成时间倒序排序
+            const sortedRecords = [...licenseRecords].sort((a, b) => new Date(b.generatedAt) - new Date(a.generatedAt));
+            
+            let html = '';
+            sortedRecords.forEach(record => {
+                let typeText = '', typeClass = '';
+                switch(record.typeCode) {
+                    case '001': typeText = '8元/1次'; typeClass = 'type-1'; break;
+                    case '003': typeText = '18元/3次'; typeClass = 'type-3'; break;
+                    case '010': typeText = '58元/10次'; typeClass = 'type-10'; break;
+                    case '999': typeText = '88元/终生'; typeClass = 'type-999'; break;
+                }
+                
+                const generatedTime = new Date(record.generatedAt).toLocaleString('zh-CN');
+                const activatedTime = record.activatedAt ? new Date(record.activatedAt).toLocaleString('zh-CN') : '未激活';
+                
+                html += `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <span class="record-code">${record.licenseCode.substring(0, 20)}...</span>
+                            <span class="record-type ${typeClass}">${typeText}</span>
+                        </div>
+                        <div class="record-details">
+                            <div><strong>用户：</strong>${record.userName || '未记录'}</div>
+                            <div><strong>邮箱：</strong>${record.userEmail || '未记录'}</div>
+                            <div><strong>金额：</strong>${record.amount}元</div>
+                            <div><strong>使用次数：</strong>${record.times}次</div>
+                            <div><strong>生成时间：</strong>${generatedTime}</div>
+                            <div><strong>激活状态：</strong><span style="color: ${record.activated ? '#27ae60' : '#e74c3c'}">${record.activated ? '已激活' : '未激活'}</span></div>
+                            <div><strong>激活时间：</strong>${activatedTime}</div>
+                            <div><strong>机器码：</strong>${record.machineCode || '未激活'}</div>
+                        </div>
+                        <div class="record-actions">
+                            <button class="btn copy-btn" onclick="copyToClipboard('${record.licenseCode}')">复制授权码</button>
+                            <button class="btn btn-primary" onclick="editRecord(${record.id})">编辑</button>
+                            <button class="btn btn-danger" onclick="deleteRecord(${record.id})">删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('recordsList').innerHTML = html;
+            showStatus('recordsStatus', 'success', `已加载 ${licenseRecords.length} 条记录`);
+        }
+        
+        // 搜索授权记录
+        function searchLicenseRecords() {
+            const searchTerm = document.getElementById('searchRecords').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                loadLicenseRecords();
+                return;
+            }
+            
+            const filteredRecords = licenseRecords.filter(record => 
+                record.licenseCode.toLowerCase().includes(searchTerm) ||
+                (record.userEmail && record.userEmail.toLowerCase().includes(searchTerm)) ||
+                (record.userName && record.userName.toLowerCase().includes(searchTerm)) ||
+                (record.machineCode && record.machineCode.toLowerCase().includes(searchTerm)) ||
+                record.typeCode.includes(searchTerm)
+            );
+            
+            if (filteredRecords.length === 0) {
+                document.getElementById('recordsList').innerHTML = '<p style="text-align: center; color: #7f8c8d;">未找到匹配的记录</p>';
+                return;
+            }
+            
+            let html = '';
+            filteredRecords.forEach(record => {
+                let typeText = '', typeClass = '';
+                switch(record.typeCode) {
+                    case '001': typeText = '8元/1次'; typeClass = 'type-1'; break;
+                    case '003': typeText = '18元/3次'; typeClass = 'type-3'; break;
+                    case '010': typeText = '58元/10次'; typeClass = 'type-10'; break;
+                    case '999': typeText = '88元/终生'; typeClass = 'type-999'; break;
+                }
+                
+                const generatedTime = new Date(record.generatedAt).toLocaleString('zh-CN');
+                
+                html += `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <span class="record-code">${record.licenseCode.substring(0, 20)}...</span>
+                            <span class="record-type ${typeClass}">${typeText}</span>
+                        </div>
+                        <div class="record-details">
+                            <div><strong>用户：</strong>${record.userName || '未记录'}</div>
+                            <div><strong>邮箱：</strong>${record.userEmail || '未记录'}</div>
+                            <div><strong>生成时间：</strong>${generatedTime}</div>
+                            <div><strong>状态：</strong><span style="color: ${record.activated ? '#27ae60' : '#e74c3c'}">${record.activated ? '已激活' : '未激活'}</span></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('recordsList').innerHTML = html;
+            showStatus('recordsStatus', 'info', `找到 ${filteredRecords.length} 条匹配记录`);
+        }
+        
+        // 编辑记录
+        function editRecord(recordId) {
+            const record = licenseRecords.find(r => r.id === recordId);
+            if (!record) return;
+            
+            const newNotes = prompt('请输入备注信息（可选）：', record.notes || '');
+            if (newNotes !== null) {
+                record.notes = newNotes;
+                localStorage.setItem('licenseRecords', JSON.stringify(licenseRecords));
+                loadLicenseRecords();
+                showStatus('recordsStatus', 'success', '记录已更新');
+            }
+        }
+        
+        // 删除记录
+        function deleteRecord(recordId) {
+            if (!confirm('确定要删除这条记录吗？此操作不可恢复。')) {
+                return;
+            }
+            
+            const index = licenseRecords.findIndex(r => r.id === recordId);
+            if (index !== -1) {
+                licenseRecords.splice(index, 1);
+                localStorage.setItem('licenseRecords', JSON.stringify(licenseRecords));
+                loadLicenseRecords();
+                updateStatistics();
+                showStatus('recordsStatus', 'success', '记录已删除');
+            }
+        }
+        
+        // 导出记录为CSV
+        function exportRecordsToCSV() {
+            if (licenseRecords.length === 0) {
+                showStatus('recordsStatus', 'error', '没有可导出的记录');
+                return;
+            }
+            
+            // CSV表头
+            let csv = '授权码,类型,金额(元),使用次数,用户,邮箱,生成时间,激活状态,激活时间,机器码,备注\n';
+            
+            // 添加数据行
+            licenseRecords.forEach(record => {
+                let typeText = '';
+                switch(record.typeCode) {
+                    case '001': typeText = '8元/1次'; break;
+                    case '003': typeText = '18元/3次'; break;
+                    case '010': typeText = '58元/10次'; break;
+                    case '999': typeText = '88元/终生'; break;
+                }
+                
+                const row = [
+                    record.licenseCode,
+                    typeText,
+                    record.amount,
+                    record.times,
+                    record.userName || '',
+                    record.userEmail || '',
+                    new Date(record.generatedAt).toLocaleString('zh-CN'),
+                    record.activated ? '已激活' : '未激活',
+                    record.activatedAt ? new Date(record.activatedAt).toLocaleString('zh-CN') : '',
+                    record.machineCode || '',
+                    record.notes || ''
+                ].map(field => `"${field}"`).join(',');
+                
+                csv += row + '\n';
+            });
+            
+            // 创建下载链接
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `授权记录_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            
+            showStatus('recordsStatus', 'success', 'CSV文件已导出');
+        }
+        
+        // 清空所有记录
+        function clearAllRecords() {
+            if (!confirm('确定要清空所有授权记录吗？此操作不可恢复！')) {
+                return;
+            }
+            
+            if (!confirm('再次确认：这将删除所有授权记录，包括已激活的记录。')) {
+                return;
+            }
+            
+            licenseRecords = [];
+            localStorage.setItem('licenseRecords', JSON.stringify(licenseRecords));
+            loadLicenseRecords();
+            updateStatistics();
+            showStatus('recordsStatus', 'success', '所有记录已清空');
+        }
+        
+        // 加载用户数据
+        function loadUserData() {
+            // 从localStorage加载用户数据
+            const savedUsers = localStorage.getItem('bidToolUsers');
+            if (!savedUsers) {
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #7f8c8d;">暂无用户数据</td></tr>';
+                showStatus('usersStatus', 'info', '未找到用户数据');
+                return;
+            }
+            
+            try {
+                userData = JSON.parse(savedUsers);
+                
+                // 更新统计数据
+                const totalUsers = userData.length;
+                const paidUsers = userData.filter(u => u.totalPayments > 0).length;
+                const lifetimeUsers = userData.filter(u => u.isUnlimited).length;
+                const totalRevenue = userData.reduce((sum, u) => sum + u.totalPayments, 0);
+                
+                document.getElementById('totalUsers').textContent = totalUsers;
+                document.getElementById('paidUsers').textContent = paidUsers;
+                document.getElementById('lifetimeUsers').textContent = lifetimeUsers;
+                document.getElementById('totalRevenue').textContent = totalRevenue + '元';
+                
+                // 生成表格
+                let html = '';
+                userData.forEach(user => {
+                    const lastPayment = user.lastPayment ? new Date(user.lastPayment).toLocaleString('zh-CN') : '从未支付';
+                    const remainingUses = user.isUnlimited ? '无限' : user.remainingUses;
+                    
+                    html += `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td><span title="${user.machineCode}">${user.machineCode.substring(0, 15)}...</span></td>
+                            <td>${remainingUses}</td>
+                            <td>${user.isUnlimited ? '是' : '否'}</td>
+                            <td>${lastPayment}</td>
+                            <td>${user.totalPayments || 0}元</td>
+                            <td>
+                                <button class="copy-btn" onclick="copyToClipboard('${user.machineCode}')">复制机器码</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('usersTableBody').innerHTML = html;
+                showStatus('usersStatus', 'success', `已加载 ${userData.length} 条用户数据`);
+                
+            } catch (e) {
+                console.error('解析用户数据失败:', e);
+                showStatus('usersStatus', 'error', '加载用户数据失败');
+            }
+        }
+        
+        // 导出用户数据为CSV
+        function exportUsersToCSV() {
+            if (userData.length === 0) {
+                showStatus('usersStatus', 'error', '没有可导出的用户数据');
+                return;
+            }
+            
+            // CSV表头
+            let csv = 'ID,机器码,剩余次数,是否终生,最后支付时间,总支付金额(元),邮箱\n';
+            
+            // 添加数据行
+            userData.forEach(user => {
+                const lastPayment = user.lastPayment ? new Date(user.lastPayment).toLocaleString('zh-CN') : '从未支付';
+                const remainingUses = user.isUnlimited ? '无限' : user.remainingUses;
+                
+                const row = [
+                    user.id,
+                    user.machineCode,
+                    remainingUses,
+                    user.isUnlimited ? '是' : '否',
+                    lastPayment,
+                    user.totalPayments || 0,
+                    user.email || ''
+                ].map(field => `"${field}"`).join(',');
+                
+                csv += row + '\n';
+            });
+            
+            // 创建下载链接
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `用户数据_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            
+            showStatus('usersStatus', 'success', '用户数据CSV文件已导出');
+        }
+        
+        // 更新统计数据
+        function updateStatistics() {
+            // 更新授权码统计
+            document.getElementById('totalLicenses').textContent = licenseRecords.length;
+            
+            const activatedCount = licenseRecords.filter(r => r.activated).length;
+            document.getElementById('activatedLicenses').textContent = activatedCount;
+            
+            const type1Count = licenseRecords.filter(r => r.typeCode === '001').length;
+            const type3Count = licenseRecords.filter(r => r.typeCode === '003').length;
+            const type10Count = licenseRecords.filter(r => r.typeCode === '010').length;
+            const type999Count = licenseRecords.filter(r => r.typeCode === '999').length;
+            
+            document.getElementById('type1Licenses').textContent = type1Count;
+            document.getElementById('type3Licenses').textContent = type3Count;
+            document.getElementById('type10Licenses').textContent = type10Count;
+            document.getElementById('type999Licenses').textContent = type999Count;
+            
+            // 更新用户统计
+            if (userData.length > 0) {
+                const paidUsers = userData.filter(u => u.totalPayments > 0).length;
+                const lifetimeUsers = userData.filter(u => u.isUnlimited).length;
+                const totalRevenue = userData.reduce((sum, u) => sum + u.totalPayments, 0);
+                
+                document.getElementById('totalUsers').textContent = userData.length;
+                document.getElementById('paidUsers').textContent = paidUsers;
+                document.getElementById('lifetimeUsers').textContent = lifetimeUsers;
+                document.getElementById('totalRevenue').textContent = totalRevenue + '元';
+            }
+            
+            // 显示近期记录
+            showRecentRecords();
+        }
+        
+        // 显示近期记录
+        function showRecentRecords() {
+            if (licenseRecords.length === 0) {
+                document.getElementById('recentRecords').innerHTML = '<p style="text-align: center; color: #7f8c8d;">暂无授权记录</p>';
+                return;
+            }
+            
+            // 按生成时间倒序排序，取最近10条
+            const recentRecords = [...licenseRecords]
+                .sort((a, b) => new Date(b.generatedAt) - new Date(a.generatedAt))
+                .slice(0, 10);
+            
+            let html = '<table class="data-table"><thead><tr><th>授权码</th><th>类型</th><th>用户</th><th>时间</th><th>状态</th></tr></thead><tbody>';
+            
+            recentRecords.forEach(record => {
+                let typeText = '';
+                switch(record.typeCode) {
+                    case '001': typeText = '8元'; break;
+                    case '003': typeText = '18元'; break;
+                    case '010': typeText = '58元'; break;
+                    case '999': typeText = '88元'; break;
+                }
+                
+                const shortCode = record.licenseCode.substring(0, 15) + '...';
+                const time = new Date(record.generatedAt).toLocaleDateString('zh-CN');
+                const status = record.activated ? '已激活' : '未激活';
+                const statusColor = record.activated ? '#27ae60' : '#e74c3c';
+                
+                html += `
+                    <tr>
+                        <td title="${record.licenseCode}">${shortCode}</td>
+                        <td>${typeText}</td>
+                        <td>${record.userName || '未记录'}</td>
+                        <td>${time}</td>
+                        <td style="color: ${statusColor}">${status}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('recentRecords').innerHTML = html;
+        }
+        
+        // 生成统计报告
+        function generateReport() {
+            const totalLicenses = licenseRecords.length;
+            const activatedLicenses = licenseRecords.filter(r => r.activated).length;
+            const activationRate = totalLicenses > 0 ? ((activatedLicenses / totalLicenses) * 100).toFixed(2) : 0;
+            
+            const type1Count = licenseRecords.filter(r => r.typeCode === '001').length;
+            const type3Count = licenseRecords.filter(r => r.typeCode === '003').length;
+            const type10Count = licenseRecords.filter(r => r.typeCode === '010').length;
+            const type999Count = licenseRecords.filter(r => r.typeCode === '999').length;
+            
+            const totalRevenue = type1Count * 8 + type3Count * 18 + type10Count * 58 + type999Count * 88;
+            
+            const report = `
+投标工具授权统计报告
+生成时间：${new Date().toLocaleString('zh-CN')}
+
+【总体统计】
+总授权码数：${totalLicenses}个
+已激活数：${activatedLicenses}个
+激活率：${activationRate}%
+
+【按类型统计】
+8元授权（1次）：${type1Count}个
+18元授权（3次）：${type3Count}个
+58元授权（10次）：${type10Count}个
+88元授权（终生）：${type999Count}个
+
+【收入统计】
+8元授权收入：${type1Count * 8}元
+18元授权收入：${type3Count * 18}元
+58元授权收入：${type10Count * 58}元
+88元授权收入：${type999Count * 88}元
+总收入：${totalRevenue}元
+
+【用户统计】
+总用户数：${userData.length}个
+付费用户：${userData.filter(u => u.totalPayments > 0).length}个
+终生用户：${userData.filter(u => u.isUnlimited).length}个
+
+【备注】
+1. 此报告为本地数据统计
+2. 数据来源于localStorage存储
+3. 统计时间：${new Date().toLocaleString('zh-CN')}
+            `;
+            
+            // 创建下载链接
+            const blob = new Blob(['\uFEFF' + report], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `授权统计报告_${new Date().toISOString().slice(0, 10)}.txt`;
+            link.click();
+            
+            alert('统计报告已生成并下载！');
+        }
+        
+        // 显示状态消息
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.className = `status-message status-${type}`;
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    // 复制成功
+                }).catch(err => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+        
+        // 传统的复制文本方法
+        function fallbackCopyText(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // 工具端授权验证函数（从工具端复制过来，保持一致性）
+        function generateLicenseCodeForDeveloper(authRequestCode, amount, times, machineCode) {
+            // 解析授权请求码
+            const parts = authRequestCode.split('-');
+            if (parts.length !== 4 || parts[0] !== 'AUTH' || parts[1] !== 'REQ') {
+                return null;
+            }
+            
+            // 根据金额确定类型代码
+            let typeCode = '001';
+            if (amount === 18) typeCode = '003';
+            else if (amount === 58) typeCode = '010';
+            else if (amount === 88) typeCode = '999';
+            
+            const timestamp = parts[2];
+            const randomStr = parts[3];
+            
+            // 生成签名
+            const signature = generateSignature(typeCode, timestamp, randomStr);
+            
+            // 生成授权码
+            const licenseCode = `AUTH-${typeCode}-${timestamp}-${randomStr}-${signature}`;
+            
+            return licenseCode;
+        }
+    </script>
+</body>
+</html>
