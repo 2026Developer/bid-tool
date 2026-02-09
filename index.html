@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投标价格评分估算工具 - 商业版</title>
+<meta name="version" content="3.0">
+<meta name="update-check-url" content="https://raw.githubusercontent.com/[你的用户名]/[仓库名]/main/version.json">
     <style>
         /* 所有CSS样式完整保留 */
         * {
@@ -1984,6 +1986,216 @@
     <div id="pdfTempContainer" class="hidden-pdf-container"></div>
 
     <script>
+// 版本更新检查系统
+function checkForUpdates() {
+    const currentVersion = document.querySelector('meta[name="version"]').content;
+    const updateCheckUrl = document.querySelector('meta[name="update-check-url"]').content;
+    
+    // 从localStorage获取上次检查时间
+    const lastCheck = localStorage.getItem('lastUpdateCheck');
+    const now = new Date().getTime();
+    
+    // 如果24小时内检查过，不再检查
+    if (lastCheck && (now - parseInt(lastCheck)) < 24 * 60 * 60 * 1000) {
+        return;
+    }
+    
+    // 保存本次检查时间
+    localStorage.setItem('lastUpdateCheck', now.toString());
+    
+    // 获取最新版本信息
+    fetch(updateCheckUrl + '?t=' + now)
+        .then(response => response.json())
+        .then(data => {
+            if (data.version !== currentVersion) {
+                showUpdateNotification(data);
+            }
+        })
+        .catch(error => {
+            console.log('版本检查失败:', error);
+        });
+}
+
+// 显示更新通知
+function showUpdateNotification(updateInfo) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 10000;
+        max-width: 400px;
+        animation: slideIn 0.5s ease;
+    `;
+    
+    notification.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            <strong style="font-size: 16px;">🎉 发现新版本 v${updateInfo.version}</strong>
+            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; cursor: pointer; font-size: 18px;">×</button>
+        </div>
+        <div style="font-size: 14px; margin-bottom: 15px; line-height: 1.4;">
+            <div>发布日期: ${updateInfo.release_date}</div>
+            <div style="margin-top: 5px;">更新内容:</div>
+            <ul style="margin: 5px 0 0 15px; padding: 0;">
+                ${updateInfo.changelog.map(item => `<li style="margin-bottom: 3px;">${item}</li>`).join('')}
+            </ul>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="updateNow('${updateInfo.update_url}')" style="background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1;">
+                立即更新
+            </button>
+            <button onclick="remindLater()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; flex: 1;">
+                稍后提醒
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 添加动画
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // 如果是强制更新，不能关闭
+    if (updateInfo.force_update) {
+        notification.querySelector('button').style.display = 'none';
+        setTimeout(() => {
+            updateNow(updateInfo.update_url);
+        }, 5000);
+    }
+}
+
+// 立即更新
+function updateNow(url) {
+    if (confirm('确定要更新到最新版本吗？当前页面数据将被刷新。')) {
+        // 保存当前数据到sessionStorage
+        const currentData = {
+            tableData: getCurrentTableData(),
+            algorithm: calculationResults.currentAlgorithm,
+            params: getCurrentParams()
+        };
+        sessionStorage.setItem('pendingUpdateData', JSON.stringify(currentData));
+        sessionStorage.setItem('pendingUpdateUrl', url);
+        
+        // 跳转到新版本
+        window.location.href = url;
+    }
+}
+
+// 稍后提醒（24小时后）
+function remindLater() {
+    localStorage.setItem('lastUpdateCheck', '0'); // 重置检查时间
+    document.querySelector('div[style*="position: fixed"][style*="top: 20px"]').remove();
+}
+
+// 获取当前表格数据
+function getCurrentTableData() {
+    const rows = document.querySelectorAll('#bidTableBody tr');
+    const data = [];
+    rows.forEach(row => {
+        data.push({
+            package: row.querySelector('.package').value,
+            region: row.querySelector('.region').value,
+            name: row.querySelector('.bidder-name').value,
+            price: row.querySelector('.bid-price').value,
+            qualified: row.querySelector('.qualified').value
+        });
+    });
+    return data;
+}
+
+// 获取当前参数
+function getCurrentParams() {
+    const algorithm = calculationResults.currentAlgorithm;
+    if (algorithm === 'arithmetic') {
+        return {
+            algorithm: 'arithmetic',
+            floatCoefficient: document.getElementById('floatCoefficient').value
+        };
+    } else {
+        return {
+            algorithm: 'interval',
+            intervalLower: document.getElementById('intervalLower').value,
+            intervalUpper: document.getElementById('intervalUpper').value,
+            n1: document.getElementById('n1').value,
+            n2: document.getElementById('n2').value
+        };
+    }
+}
+
+// 页面加载时检查更新
+document.addEventListener('DOMContentLoaded', function() {
+    // 等待2秒后检查更新
+    setTimeout(checkForUpdates, 2000);
+    
+    // 检查是否有待恢复的数据（从旧版本更新过来）
+    const pendingUpdateData = sessionStorage.getItem('pendingUpdateData');
+    const pendingUpdateUrl = sessionStorage.getItem('pendingUpdateUrl');
+    
+    if (pendingUpdateData && pendingUpdateUrl && pendingUpdateUrl === window.location.href) {
+        try {
+            const data = JSON.parse(pendingUpdateData);
+            restoreData(data);
+            alert('数据已从上一版本恢复！');
+        } catch (e) {
+            console.error('恢复数据失败:', e);
+        }
+        // 清除临时存储
+        sessionStorage.removeItem('pendingUpdateData');
+        sessionStorage.removeItem('pendingUpdateUrl');
+    }
+});
+
+// 恢复数据
+function restoreData(data) {
+    if (data.tableData && data.tableData.length > 0) {
+        // 清空现有表格
+        const tableBody = document.getElementById('bidTableBody');
+        tableBody.innerHTML = '';
+        
+        // 恢复表格数据
+        data.tableData.forEach((rowData, index) => {
+            addRow();
+            const rows = tableBody.querySelectorAll('tr');
+            const currentRow = rows[rows.length - 1];
+            
+            currentRow.querySelector('.package').value = rowData.package || '';
+            currentRow.querySelector('.region').value = rowData.region || '';
+            currentRow.querySelector('.bidder-name').value = rowData.name || '';
+            currentRow.querySelector('.bid-price').value = rowData.price || '0';
+            currentRow.querySelector('.qualified').value = rowData.qualified || 'yes';
+        });
+        
+        updateRowNumbers();
+    }
+    
+    // 恢复算法设置
+    if (data.algorithm) {
+        selectMethod(data.algorithm);
+        if (data.params) {
+            if (data.algorithm === 'arithmetic') {
+                document.getElementById('floatCoefficient').value = data.params.floatCoefficient || '-0.25';
+            } else {
+                document.getElementById('intervalLower').value = data.params.intervalLower || '-10';
+                document.getElementById('intervalUpper').value = data.params.intervalUpper || '10';
+                document.getElementById('n1').value = data.params.n1 || '2.0';
+                document.getElementById('n2').value = data.params.n2 || '1.0';
+                updateIntervalParamsDisplay();
+            }
+        }
+    }
+}
         // 全局变量存储计算结果和文件名
         let calculationResults = {
             packages: {}, // 按包存储计算结果
