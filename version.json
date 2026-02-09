@@ -1,0 +1,11 @@
+{
+  "version": "3.0",
+  "update_url": "https://[你的用户名].github.io/[仓库名]/index.html",
+  "release_date": "2024-01-20",
+  "changelog": [
+    "v3.0 - 新增授权管理系统",
+    "v2.0 - 增加区间复合平均价算法",
+    "v1.0 - 初始版本发布"
+  ],
+  "force_update": false
+}
